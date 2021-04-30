@@ -1,0 +1,130 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+int check_duplicate_char(char s[26]);
+int valid_key(char s[26]);
+
+int main()
+{
+    FILE *inputfile,*tem;
+    char ch;
+    char key[26];
+    printf("ENTER KEY : ");
+    //fgets(key, 27, stdin);//it takes string as null terminated string
+    scanf("%s",key);
+    printf("%lu\n",strlen(key));
+     
+    for(int i=0;i< 26;i++)
+    {
+        if (islower(key[i]))
+        {
+            key[i] = toupper(key[i]);
+        }
+    }
+    printf("%s\n",key);
+   
+    if(strlen(key) != 26)
+    {
+        printf("Key must contain 26 character.\n");
+        return 1;
+    }
+    if(valid_key(key) == 1)
+    {
+        printf("Key must only contain alphabetic characters.\n");
+        return 1;
+    }
+    if(check_duplicate_char(key) == 1)
+    {
+        printf("Key must not contain repeated character.\n");
+        return 1;
+    }
+    char filename[30];
+    printf("ENTER FILE NAME: ");
+    scanf("%s",filename);
+    inputfile = fopen(filename,"r");
+    if(inputfile == NULL)
+    {
+        printf("File can't be open.");
+        return 1;
+    }
+    tem = fopen("temp.txt","w");
+    if(tem == NULL)
+    {
+        return 1;
+    }
+    ch = fgetc(inputfile);
+    while(ch != EOF)
+    {
+        if(islower(ch))
+        {
+            int a = ch-97;
+            char p = tolower(key[a]);
+            fputc(p,tem);
+        }
+        else if(isupper(ch))
+        {
+            int a = ch-65;
+            fputc(key[a],tem);
+        }
+        else
+        {
+            char a = ch + 200; 
+            fputc(a,tem);
+        }
+        ch = fgetc(inputfile);
+    }
+    fclose(inputfile);
+    fclose(tem);
+    inputfile = fopen(filename,"w");
+    if(inputfile == NULL)
+    {
+        return 1;
+    }
+    tem = fopen("temp.txt","r");
+    if(tem == NULL)
+    {
+        return 1; 
+    }
+    ch = fgetc(tem);
+    while(ch != EOF)
+    {
+        fputc(ch,inputfile);
+        ch = fgetc(tem); 
+    }
+    fclose(inputfile);
+    fclose(tem);
+    printf("ENCRYPTION WAS SUCCESSFUL\n");
+    return 0;
+}
+
+int valid_key(char s[26])
+{
+    int length = strlen(s);
+    for (int i = 0;i < length;i++)
+    {
+        if(!isalpha(s[i]))
+        {
+           return 1;
+        }
+    }
+    return 0;
+}
+
+int check_duplicate_char(char s[26])
+{
+    int len = strlen(s);
+    for(int i = 0;i < len;i++)
+    {
+        for(int j = i+1;j < len;j++)
+        {
+            if(s[i] == s[j])
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+ 
